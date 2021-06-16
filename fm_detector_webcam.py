@@ -53,7 +53,7 @@ def detect_and_predict_mask(frame, faceNet, maskNet):
 			# ordering, resize it to 224x224, and preprocess it
 			face = frame[startY:endY, startX:endX]
 			face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-			face = cv2.resize(face, (400, 400))
+			face = cv2.resize(face, (224, 224))
 			face = img_to_array(face)
 			face = preprocess_input(face)
 			face = np.expand_dims(face, axis=0)
@@ -99,7 +99,8 @@ maskNet = load_model(args["model"])
 
 # initialize the video stream and allow the camera sensor to warm up
 print("Starting video stream...")
-vs = VideoStream(src=0).start()
+# src=1 for usb webcam, src=0 for built in droidcam
+vs = VideoStream(src=1).start()
 time.sleep(2.0)
 
 # loop over the frames from the video stream
@@ -122,8 +123,8 @@ while True:
 
 		# determine the class label and color we'll use to draw
 		# the bounding box and text
-		label = "Pakai Masker" if mask > withoutMask else "Tidak Pakai Masker"
-		color = (0, 255, 0) if label == "Pakai Masker" else (0, 0, 255)
+		label = "Masker" if mask > withoutMask else "No Masker"
+		color = (0, 255, 0) if label == "Masker" else (0, 0, 255)
 
 		# include the probability in the label
 		label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
